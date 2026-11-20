@@ -427,3 +427,22 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Chaves e variáveis de ambiente
+.env
+*.key
+
+# Dados e artefatos pesados de modelos
+data/*.csv
+data/*.json
+data/*.parquet
+models/
+lora_adapters/
+wandb/
+*.safetensors
+*.bin
+
+# Cache do Python e Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
