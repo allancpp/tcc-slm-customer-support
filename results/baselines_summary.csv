@@ -1,0 +1,4 @@
+Modelo,Acurácia (%),F1-Macro (%),ROUGE-L,Latência Média (s),Custo / 1k msgs (USD)
+Qwen2.5-1.5B (Zero-Shot),57.33,43.21,0.2025,1.98,0.1925
+Qwen2.5-1.5B (Few-Shot),53.67,36.2,0.1914,1.927,0.1874
+Gemini 2.5 Flash-Lite (API),92.0,88.73,0.2162,0.973,0.0004
