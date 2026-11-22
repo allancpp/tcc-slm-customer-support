@@ -55,6 +55,8 @@ Utilizou-se o *Bitext Customer Support LLM Chatbot Training Dataset*, composto p
 * **Conjunto de Validação (`data/val_set_500.json`):** 500 exemplos (~18 a 19 amostras por intenção), utilizado para monitoramento da perda de validação e seleção do melhor *checkpoint*.
 * **Conjunto de Teste Ouro (`data/test_set_300.json`):** 300 exemplos inéditos (~11 amostras por intenção), mantidos estritamente isolados para avaliação comparativa final.
 
+![Distribuição Estratificada das 27 Intenções](results/intent_distribution.png)
+
 #### 2.2. Formulação da Tarefa e Engenharia de Prompt
 
 Todos os modelos foram avaliados sob o mesmo *System Prompt*, instruindo o assistente a retornar exclusivamente um objeto JSON válido contendo dois campos obrigatórios: `"intent"` (restrito à lista oficial das 27 intenções) e `"response"` (resposta educada e objetiva ao cliente). Foram avaliadas cinco configurações experimentais:
