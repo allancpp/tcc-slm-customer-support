@@ -1,6 +1,6 @@
 # Especialização de Small Language Models (SLMs) via QLoRA para Classificação de Intenções e Resposta Estruturada em Suporte ao Cliente
 
-#### Aluno: [Allan Ferreira](https://github.com/link_do_github)
+#### Aluno: [Allan Ferreira](https://github.com/allancpp)
 
 #### Orientador: [Leonardo Forero Mendoza](https://github.com/leofome8)
 
@@ -10,13 +10,11 @@ Trabalho apresentado ao curso [GenAI e LLM MASTER](https://ica.ele.puc-rio.br/cu
 
 
  Notebooks do experimento:
-* [01 — Análise Exploratória e Particionamento Estratificado](https://www.google.com/search?q=notebooks/01_eda_and_split.ipynb)
-* [02 — Avaliação dos Baselines (Zero-Shot, Few-Shot e API)](https://www.google.com/search?q=notebooks/02_baselines_evaluation.ipynb)
-* [03 — Fine-Tuning Eficiente com QLoRA](https://www.google.com/search?q=notebooks/03_lora_finetuning.ipynb)
-* [04 — Avaliação Final, Otimização de Inferência e Gráficos](https://www.google.com/search?q=notebooks/04_evaluation_and_charts.ipynb)
-* [05 — Demonstração Interativa com Gradio](https://www.google.com/search?q=notebooks/05_gradio_demo.ipynb)
-
-
+* [01 — Análise Exploratória e Particionamento Estratificado](notebooks/01_eda_and_split.ipynb)
+* [02 — Avaliação dos Baselines (Zero-Shot, Few-Shot e API)](notebooks/02_baselines_evaluation.ipynb)
+* [03 — Fine-Tuning Eficiente com QLoRA](notebooks/03_lora_finetuning.ipynb)
+* [04 — Avaliação Final, Otimização de Inferência e Gráficos](notebooks/04_evaluation_and_charts.ipynb)
+* [05 — Demonstração Interativa com Gradio](notebooks/05_gradio_demo.ipynb)
 
 
 ---
@@ -75,6 +73,8 @@ O ajuste fino foi conduzido sobre o `Qwen/Qwen2.5-1.5B-Instruct` utilizando quan
 * **Módulos Alvo:** Todas as projeções lineares de atenção e MLP (`q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`).
 * **Otimização e Agendamento:** Otimizador `paged_adamw_8bit`, taxa de aprendizado inicial de `2e-4` com decaimento cosseno (*cosine scheduler*), *warmup ratio* de `0.05`, tamanho de lote efetivo de `16` (*batch size* `4` com `4` passos de acumulação de gradiente), comprimento máximo de sequência de `512` tokens e `2 épocas` completas (`500` passos) em GPU NVIDIA T4 (15 GB VRAM).
 
+![Curva de Convergência do Fine-Tuning QLoRA](results/lora_loss_curve.png)
+
 ### 3. Resultados
 
 A avaliação quantitativa no *Gold Test Set* (300 mensagens inéditas) considerou cinco métricas: **Acurácia** e **F1-Macro** (para classificação multiclasse balanceada), **ROUGE-L** (para aderência lexical e estrutural da resposta gerada), **Latência Média por Mensagem (s)** e **Custo Estimado por 1.000 Mensagens (USD)**.
@@ -89,15 +89,21 @@ A avaliação quantitativa no *Gold Test Set* (300 mensagens inéditas) consider
 
 **Nota metodológica: Para os modelos locais executados em GPU NVIDIA T4 dedicada, o custo operacional foi estimado proporcionalmente ao tempo ocupado de computação considerando uma tarifa de referência de US$ 0,35/hora. Para o modelo via API, utilizou-se o custo real faturado por tokens de entrada e saída.*
 
+![Comparativo de Desempenho entre Modelos](results/models_comparison.png)
+
 #### 3.1. Análise Comparativa e Engenharia de Inferência
 
 * **Salto de Desempenho com Especialização:** O *fine-tuning* QLoRA elevou a acurácia do `Qwen2.5-1.5B-Instruct` de **57,33%** para **99,67%** (299 acertos em 300 mensagens inéditas), superando o *baseline* comercial `Gemini 3.5 Flash-Lite` (**92,00%**) em **+7,67 pontos percentuais** e elevando o **F1-Macro para 99,32%** (ganho de **+10,59 p.p.** sobre a API).
 * **Degradação no Few-Shot em Modelos Compactos:** A adição de exemplos no *prompt* (*Few-Shot*) reduziu a acurácia do modelo base de 57,33% para 53,67%, evidenciando que janelas de contexto extensas sem atualização de pesos dispersam a atenção em arquiteturas de 1,5B parâmetros.
 * **Otimização de Latência via Fusão de Pesos (`merge_and_unload()`):** A execução inicial com o adaptador LoRA acoplado dinamicamente sobre o modelo quantizado em 4-bit apresentou latência média de **13,620s** devido ao *overhead* de dequantização e multiplicação separada das matrizes $A$ e $B$ a cada passo autoregressivo. Ao fundir permanentemente os pesos LoRA ao modelo base em precisão **FP16** (`merge_and_unload()`), a **latência média caiu para 4,266s — uma redução de 68,7% (aceleração de 3,2x)** — reduzindo o custo estimado de infraestrutura em GPU de **$1,3242** para **$0,4147** por mil mensagens, preservando **99,33% de acurácia** e alcançando o maior **F1-Macro (99,32%)** do experimento.
 
+![Matriz de Confusão — Qwen2.5-1.5B + LoRA](results/confusion_matrix_lora.png)
+
 #### 3.2. Protótipo Interativo (Gradio)
 
 Para validação qualitativa e demonstração em tempo real, foi implementada uma interface web em **Gradio** (`src/app.py` e `notebooks/05_gradio_demo.ipynb`) utilizando o modelo fundido em FP16, capaz de receber mensagens livres de clientes e retornar a intenção classificada, a resposta sugerida, o *payload* JSON estruturado e a latência medida por requisição.
+
+![Demonstração da Interface Gradio](results/gradio_demo.png)
 
 ### 4. Conclusões
 
@@ -111,7 +117,7 @@ Adicionalmente, demonstrou-se que a etapa de engenharia de pós-treinamento — 
 Para reproduzir o ambiente localmente, clone o repositório, crie um ambiente virtual e instale as dependências listadas em `requirements.txt`:
 
 ```bash
-git clone [https://github.com/link_do_repositorio.git](https://github.com/link_do_repositorio.git)
+git clone [https://github.com/allancpp/tcc-slm-customer-support.git](https://github.com/allancpp/tcc-slm-customer-support.git)
 cd link_do_repositorio
 python -m venv .venv
 source .venv/bin/activate  # No Windows: .venv\Scripts\activate
