@@ -11,7 +11,7 @@ Trabalho apresentado ao curso [GenAI e LLM MASTER](https://ica.ele.puc-rio.br/cu
 
  Notebooks do experimento:
 * [01 — Análise Exploratória e Particionamento Estratificado](notebooks/01_eda_and_split.ipynb)
-* [02 — Avaliação dos Baselines (Zero-Shot, Few-Shot e API)](notebooks/02_baselines_evaluation.ipynb)
+* [02 — Avaliação dos Baselines (Zero-Shot, Few-Shot e API)](notebooks/02_baselines.ipynb)
 * [03 — Fine-Tuning Eficiente com QLoRA](notebooks/03_lora_finetuning.ipynb)
 * [04 — Avaliação Final, Otimização de Inferência e Gráficos](notebooks/04_evaluation_and_charts.ipynb)
 * [05 — Demonstração Interativa com Gradio](notebooks/05_gradio_demo.ipynb)
